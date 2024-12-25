@@ -11,11 +11,12 @@ from langchain.chains import LLMChain
 from langchain_core.language_models import LLM
 from langchain_groq import ChatGroq
 
-# Initialize Groq client
-llm = ChatGroq(
-    api_key="your api key here",
-    model_name="mixtral-8x7b-32768"
-)
+def initialize_llm(api_key):
+    """Initialize Groq LLM with user's API key"""
+    return ChatGroq(
+        api_key=api_key,
+        model_name="mixtral-8x7b-32768"
+    )
 
 def initialize_embeddings():
     """Set up our document embedding model for searching through PDF content"""
@@ -76,7 +77,7 @@ def get_conversational_chain():
     )
     
     chain = LLMChain(
-        llm=llm,
+        llm=st.session_state.llm,
         prompt=prompt
     )
     return chain
@@ -85,6 +86,12 @@ def user_input(user_question):
     """Process user questions using the vector store"""
     try:
         embeddings = initialize_embeddings()
+        
+        # Check if the FAISS index file exists
+        if not os.path.exists("faiss_index/index.faiss"):
+            st.error("FAISS index file not found. Please upload and process PDF files first.")
+            return None
+        
         vector_store = FAISS.load_local(
             "faiss_index",
             embeddings,
@@ -125,6 +132,23 @@ def main():
     # Create the sidebar for PDF uploads
     with st.sidebar:
         st.title("Menu:")
+        
+        # Add API key input
+        api_key = st.text_input("Enter your Groq API Key:", type="password")
+        if not api_key:
+            st.warning("Please enter your Groq API key to continue.")
+            return
+        
+        # Store API key in session state
+        if "llm" not in st.session_state and api_key:
+            try:
+                st.session_state.llm = initialize_llm(api_key)
+                st.success("API Key validated successfully!")
+            except Exception as e:
+                st.error(f"Invalid API key: {str(e)}")
+                return
+        
+        # PDF upload section
         pdf_docs = st.file_uploader(
             "Upload your PDF Files and Click on the Submit & Process Button",
             accept_multiple_files=True
