@@ -13,7 +13,7 @@ from langchain_groq import ChatGroq
 
 # Initialize Groq client
 llm = ChatGroq(
-    api_key="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",
+    api_key="your api key here",
     model_name="mixtral-8x7b-32768"
 )
 
