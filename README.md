@@ -14,4 +14,11 @@
    
 4. **Copy Your API Key**:
    - Once you’ve created your API key, copy it to your clipboard.
+  
+5. **Use my app** :
+   - link : https://tayyab1807.streamlit.app/
+   
+  
+   
 
+![chatty pdf](https://github.com/user-attachments/assets/51e71d90-4aaa-4e93-92b2-d9dcc2124d98)
